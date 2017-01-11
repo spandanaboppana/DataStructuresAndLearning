@@ -1,5 +1,6 @@
 #include "stack.h"
-int main() {
+void StackusingArrays()
+{
     stackType<int> st(5);
     st.initializeStack();
     st.Push(10);
@@ -18,6 +19,9 @@ int main() {
 
     cout <<endl;
 
+}
+void StacksusingLinkedLists()
+{
     linkedStackType<int> lst;
     lst.initializeStack();
     lst.Push(10);
@@ -33,6 +37,12 @@ int main() {
         lst.Pop();
     }
     cout<<endl;
+}
+
+int main() {
+    StackusingArrays();
+    StacksusingLinkedLists();
+
     return 0;
 }
 
