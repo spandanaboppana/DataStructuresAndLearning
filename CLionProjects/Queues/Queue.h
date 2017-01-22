@@ -1,12 +1,250 @@
 //
-// Created by Spandana Boppana on 1/9/17.
+// Created by Spandana Boppana on 1/13/17.
 //
 
-#ifndef STACKS_STACK_H
-#define STACKS_STACK_H
+#ifndef QUEUES_QUEUE_H
+#define QUEUES_QUEUE_H
 #include <iostream>
-#endif //STACKS_STACK_H
+#include <assert.h>
 using namespace std;
+
+template <class Type>
+class Queue
+{
+public:
+virtual bool isEmptyQueue() =0;
+virtual bool isFullQueue()=0;
+virtual Type Front()=0;
+virtual Type Back()=0;
+virtual void initializeQueue()=0;
+virtual void addQueue(Type &element)=0;
+virtual void deleteQueue()=0;
+
+};
+
+template <class Type>
+class queueType: public Queue<Type>
+{
+public:
+    bool isEmptyQueue();
+    bool isFullQueue();
+    void initializeQueue();
+    Type Front();
+    Type Back();
+    void addQueue(Type &element);
+    void deleteQueue();
+    queueType(int queueSize =100);
+    ~queueType();
+    int size();
+private:
+    int maxQueueSize;
+    int count;
+    int queueFront;
+    int queueBack;
+    Type *list;
+    int queuesize;
+};
+
+template <class Type>
+int queueType<Type>::size()
+{
+    queuesize = (maxQueueSize-queueFront+queueBack)%maxQueueSize;
+    return queuesize;
+}
+template <class Type>
+bool queueType<Type>::isEmptyQueue()
+{
+    return(queueFront == queueBack);
+}
+
+template <class Type>
+bool queueType<Type>::isFullQueue() {
+
+    return(queueFront == (queueBack +1)%maxQueueSize);
+}
+
+template <class Type>
+void queueType<Type>::initializeQueue() {
+    queueFront =0;
+    queueBack = maxQueueSize-1;
+    count =0;
+}
+
+template <class Type>
+Type queueType<Type>::Front(){
+    assert(!isEmptyQueue());
+    return list[queueFront];
+}
+
+template <class Type>
+Type queueType<Type>::Back() {
+    assert(!isFullQueue());
+    return list[queueBack];
+}
+
+template <class Type>
+void queueType<Type>::addQueue(Type &element) {
+    if(!isFullQueue())
+    {
+        count++;
+        list[queueBack] = element;
+        queueBack = (queueBack+1)%maxQueueSize;//using the mod operator to point to the next element as the array is circular
+    }
+    else
+    cout<<"Cannot add to a full queue"<<endl;
+}
+
+template <class Type>
+void queueType<Type>::deleteQueue() {
+    if(!isEmptyQueue())
+    {
+        count--;
+        queueFront = (queueFront+1)%maxQueueSize;
+    }
+    else
+        cout<<"Cannot delete from a empty queue"<<endl;
+}
+
+template <class Type>
+queueType<Type>::queueType(int queueSize) {
+    if(queueSize <=0)
+    {
+        maxQueueSize = 100;
+    }
+    else
+    {
+        maxQueueSize = queueSize;
+        queueFront = 0;
+        queueBack = 0;
+        count =0;
+        list = new Type[maxQueueSize];
+    }
+}
+
+template <class Type>
+queueType<Type>::~queueType()
+{
+    delete[] list;
+}
+
+//Linked list implementation of queue
+template <class Type>
+struct nodeType
+{
+    Type data;
+    nodeType<Type> *next;
+
+};
+
+template <class Type>
+class linkedQueueType:public Queue<Type>
+{
+public:
+    bool isEmptyQueue();
+    bool isFullQueue();
+    Type Front();
+    Type Back();
+    void initializeQueue();
+    void addQueue(Type &element);
+    void deleteQueue();
+    linkedQueueType();
+    ~linkedQueueType();
+
+private:
+    nodeType<Type> *queueFront;
+    nodeType<Type> *queueRare;
+};
+
+template <class Type>
+bool linkedQueueType<Type>::isEmptyQueue()
+{
+    return(queueFront == NULL);
+}
+
+template <class Type>
+bool linkedQueueType<Type>::isFullQueue() {
+    return false;
+}
+
+template <class Type>
+Type linkedQueueType<Type>::Front() {
+        assert(queueFront!=NULL);
+        return queueFront->data;
+}
+
+template <class Type>
+Type linkedQueueType<Type>::Back() {
+    assert(queueRare!= NULL);
+    return queueRare->data;
+}
+
+template <class Type>
+void linkedQueueType<Type>::initializeQueue() {
+
+    nodeType<Type> *temp;
+    while(queueFront!=NULL)
+    {
+        temp = queueFront;
+        queueFront = queueFront->next;
+        delete temp;
+    }
+    queueRare = NULL;
+}
+
+template <class Type>
+void linkedQueueType<Type>::addQueue(Type &element) {
+    nodeType<Type> *newNode;
+
+    newNode = new nodeType<Type>;
+
+    newNode->data = element;
+    newNode->next = NULL;
+
+    if(queueFront == NULL)
+    {
+        queueFront = newNode;
+        queueRare = newNode;
+    }
+    else
+    {
+        queueRare->next = newNode;
+        queueRare = queueRare->next;
+    }
+
+}
+
+template <class Type>
+void linkedQueueType<Type>::deleteQueue() {
+    nodeType<Type> *temp;
+    if(!isEmptyQueue())
+    {
+        temp = queueFront;
+        queueFront = queueFront->next;
+        delete temp;
+
+        if(queueFront == NULL)
+        {
+            queueRare = NULL;
+        }
+
+    }
+    else
+    {
+        cout<<"The queue is empty to delete";
+    }
+}
+
+template <class Type>
+linkedQueueType<Type> ::linkedQueueType() {
+    queueFront = NULL;
+    queueRare = NULL;
+}
+
+template <class Type>
+linkedQueueType<Type> ::~linkedQueueType() {
+    initializeQueue();
+}
+
 template <class Type>
 class stack{
 public:
@@ -23,7 +261,7 @@ template <class Type>
 class stackType: public stack<Type>
 {
 public:
-   void initializeStack();
+    void initializeStack();
     bool isEmptyStack();
     bool isFullStack();
     void Push(const Type &newItem);
@@ -106,10 +344,10 @@ stackType<Type> :: ~stackType()
 }
 
 template <class Type>
-struct nodeType
+struct nodeSType
 {
     Type value;
-    nodeType<Type> *next;
+    nodeSType<Type> *next;
 };
 
 template <class Type>
@@ -126,7 +364,7 @@ public:
     ~linkedStackType();
 
 private:
-    nodeType<Type> *stackTop;
+    nodeSType<Type> *stackTop;
 
 };
 
@@ -137,7 +375,7 @@ linkedStackType<Type>::linkedStackType() {
 template <class Type>
 void linkedStackType<Type>::initializeStack()
 {
-    nodeType<Type> *temp;
+    nodeSType<Type> *temp;
     while(stackTop != NULL)
     {
         temp = stackTop;
@@ -157,7 +395,7 @@ linkedStackType<Type>::~linkedStackType() {
 template <class Type>
 bool linkedStackType<Type> :: isEmptyStack()
 {
- return (stackTop == NULL);
+    return (stackTop == NULL);
 }
 
 template <class Type> //here in linked list, practically isFullStack doesnt work as we can add more nodes any time as it doesnt have any limitation
@@ -167,12 +405,12 @@ bool linkedStackType<Type> ::isFullStack() {
 
 template <class Type>
 void linkedStackType<Type> :: Push(const Type &newItem){
-    nodeType<Type> *newNode;
-        newNode = new nodeType<Type>;
+    nodeSType<Type> *newNode;
+    newNode = new nodeSType<Type>;
 
-        newNode->value = newItem;
-        newNode->next = stackTop;
-        stackTop = newNode;
+    newNode->value = newItem;
+    newNode->next = stackTop;
+    stackTop = newNode;
 }
 
 template <class Type>
@@ -190,7 +428,7 @@ Type linkedStackType<Type> ::Top(){
 
 template <class Type>
 void linkedStackType<Type> ::Pop(){
-    nodeType<Type> *temp;
+    nodeSType<Type> *temp;
     if(!isEmptyStack())
     {
         temp = stackTop;
@@ -361,20 +599,4 @@ void kStacks::push(int item, int sn)
 
 }
 
-//To pop item from stack number sn where sn is from 0 to k-1
-/*int kStacks::Pop(int sn)
-{
-    if(isEmpty(sn))
-    {
-        cout<<"Stack Underflow"<<endl;
-        return INT8_MAX;
-    }
-
-    int i = top[sn];
-    top[sn] = next[i];
-
-    next[i] = free;
-    free = i;
-
-    return arr[i];
-}*/
+#endif //QUEUES_QUEUE_H
