@@ -334,18 +334,14 @@ int numberOfLeafNodes(Tree* root) {
 
 //Mirror of a tree is nothing but all left and right children are being interchanges.
 Tree* mirrorOfATree(Tree *root) {
-    Tree* current;
-    current =root;
     Tree* temp;
-    if(current==NULL)
+    if(root ==NULL)
     {
-        return 0;
+        return root;
     } else{
-        mirrorOfATree(current->getLeft());
-        mirrorOfATree(current->getRight());
-        temp = current->getLeft();
-        current->setLeft(current->getRight());
-        current->setRight(temp);
+        temp = mirrorOfATree(root->getLeft());
+        root->setLeft(root->getRight());
+        root->setRight(temp);
     }
     return root;
 }
@@ -369,32 +365,30 @@ bool isAMirror(Tree* r1, Tree*r2) {
     }
 }
 
-void printAllRootToLeafPaths(Tree *root) {
-    queue<Tree*> store;
-    store.push(root);
-    Tree* temp;
-    if(root==NULL)
+void printPath(int path[],int len)
+{
+    for(int i=0;i<len;i++)
+    {
+        cout<<path[i];
+    }
+}
+
+void printAllRootToLeafPaths(Tree *root, int path[],int pathLen) {
+    if(root == NULL)
     {
         return;
     }
+    path[pathLen]= root->getData();
+    pathLen++;
+
+    if(root->getLeft()== NULL && root->getRight()==NULL)
+    {
+        printPath(path,pathLen);
+    }
     else
     {
-        while(!store.empty())
-        {
-            temp = store.front();
-            store.pop();
-            if(temp->getLeft() !=NULL && temp->getRight() !=NULL){
-                temp->show();
-            }
-            if(temp->getLeft()!=NULL)
-            {
-                store.push(temp->getLeft());
-            }
-            if(temp->getRight()!=NULL)
-            {
-                store.push(temp->getRight());
-            }
-        }
+        printAllRootToLeafPaths(root->getLeft(),path,pathLen);
+        printAllRootToLeafPaths(root->getRight(),path,pathLen);
     }
 
 }
@@ -580,10 +574,197 @@ Tree* findingDeepestNode(Tree *root)
 }
 
 //Deleting a Element from Binary Tree
-//void deleteAnElementFromBinaryTree(Tree *root){
-   // Tree *temp;
+void deleteAnElementFromBinaryTree(Tree *root, int data){
+    Tree *temp;
+    queue<Tree*> qStore;
+    int val;
+    if(root==NULL)
+    {
+        return;
+    }
+    else
+    {
+        qStore.push(root);
+    }
+    while(!qStore.empty())
+    {
+        temp = qStore.front();
+        qStore.pop();
+        if(temp->getData() == data)
+        {
+            val = temp->getData();
+        }
+        if(temp->getLeft() != NULL)
+        {
+           qStore.push(temp->getLeft());
+        }
+        if(temp->getRight() != NULL)
+        {
+            qStore.push(temp->getRight());
+        }
 
-//}
+    }
+
+
+
+}
+
+//Checking whether trees are structurally identical or not
+bool areBothTreeStructurallyIdentical(Tree *root1, Tree *root2)
+{
+    if(root1==NULL && root2==NULL)
+        return true;
+    if(root1 == NULL || root2 == NULL)
+       return false;
+    if(root1->getData() != root2->getData())
+        return false;
+    return(areBothTreeStructurallyIdentical(root1->getLeft(),root2->getLeft()) && areBothTreeStructurallyIdentical(root1->getRight(),root2->getRight()));
+}
+
+//finding the diameter of a binary tree
+int findDiameter(Tree *root, int *h)
+{
+    int lh=0;
+    int rh=0;
+
+    int ldiameter=0;
+    int rdiameter=0;
+
+    if(root==NULL)
+    {
+
+        *h=0;
+        return 0;
+    }
+
+    ldiameter = findDiameter(root->getLeft(), &lh);
+    rdiameter = findDiameter(root->getRight(), &rh);
+
+    *h = (max(lh,rh)+1);
+
+    return max(lh+rh+1, max(ldiameter,rdiameter));
+}
+
+//Finding a level which is having max sum in Binary Tree
+int findLevelWithMaxSum(Tree *root)
+{
+    queue<Tree*> qStore;
+    int count;
+    int sum;
+    Tree *temp;
+    int result;
+    int maxlevel;
+    int currentLevel = 0;
+    if(root==NULL)
+    {
+        return 0;
+    }
+    else
+    {
+        qStore.push(root);
+        result = root->getData();
+    }
+
+    while(!qStore.empty())
+    {
+        count = qStore.size();
+        currentLevel++;
+        sum=0;
+        while(count--)
+        {
+           temp= qStore.front();
+            qStore.pop();
+
+            sum= sum+temp->getData();
+
+            if(temp->getLeft()!=NULL)
+            {
+                qStore.push(temp->getLeft());
+            }
+            if(temp->getRight()!=NULL)
+            {
+                qStore.push(temp->getRight());
+            }
+        }
+
+        if(sum >= result)
+        {
+            maxlevel = currentLevel;
+            result = sum;
+        }
+
+    }
+    return maxlevel;
+}
+
+//Finding a path in tree for given sum from root to any node is there or not
+bool isPathExistsForGivenSum(Tree *root, int sum)
+{
+    if(root == NULL)
+    {
+        return (sum == 0);
+    }
+    if(sum == root->getData())
+    {
+        return 1;
+    }
+    if(root->getData() > sum)
+    {
+        return 0;
+    }
+    return (root->getLeft(),sum-root->getData() || root->getRight(),sum-root->getData());
+}
+
+//Finding the ancestors for a given node
+bool findAncestorsOfANode(Tree *root, int node)
+{
+    if(root == NULL)
+    {
+        return 0;
+    }
+    if(root->getData() == node)
+    {
+        return 1;
+    }
+
+    if( findAncestorsOfANode(root->getLeft(),node) || findAncestorsOfANode(root->getRight(),node))
+    {
+        cout<<root->getData()<<" ";
+        return 1;
+    }
+    return 0;
+
+}
+
+
+void findLevelWithMaxSumTest() {
+    Tree *root = CreateSampleCompleteTree();
+    root->getLeft()->setData(400);
+    cout<<"Max sum level:"<<findLevelWithMaxSum(root);
+}
+
+void findDiameterTest()
+{
+    Tree *root=CreateSampleCompleteTree();
+    int height=0;
+    cout<<"Diameter of Tree is "<< findDiameter(root,&height);
+}
+void printAllRootToLeafPathsTest() {
+    cout<<"\nprintAllRootToLeafPaths";
+    Tree *root = CreateSampleCompleteTree();
+    int *store = new int[10];
+    memset(store,0,10);
+    printAllRootToLeafPaths(root, store, 0);
+    delete store;
+}
+
+void twoTrees(){
+    Tree *root1 = CreateSampleCompleteTree();
+    Tree *root2 = CreateSampleCompleteTree();
+    root2->getRight()->setData(4);
+    cout<<"Are Trees structurally identical "<<(areBothTreeStructurallyIdentical(root1,root2) ? "Yes" : "No");
+}
+
 int main() {
     Tree *root = CreateSampleCompleteTree();
     bool temp;
@@ -612,10 +793,8 @@ int main() {
     cout<<endl;
     cout<<"numberofLeafsinBinaryTree:"<<numberOfLeafNodes(root);
     cout<<endl;
-   // cout<<"Mirror of Binary Tree";mirrorOfATree(root);cout<<endl;
+    cout<<"Mirror of Binary Tree";mirrorOfATree(root);cout<<endl;
    // cout<<"Inorder : ";inOrderRec(root); cout <<endl;
-   // cout<<"printAllRootToLeafPaths";
-   // printAllRootToLeafPaths(root);
     cout<<endl;
     //findingMaxElementinBinaryTree(root);
     cout<<"MaxElementinaBinaryTree:"<<findingMaxElementinBinaryTreeRec(root);
@@ -628,8 +807,14 @@ int main() {
     cout<<endl;
     temp2=findingDeepestNode(root);
     cout<<"Finding the deepest node:"<<temp2->getData();
-
-
-
+    printAllRootToLeafPathsTest();
+    cout<<endl;
+    twoTrees();
+    cout<<endl;
+    findDiameterTest();
+    cout<<endl;
+    findLevelWithMaxSumTest();
+    cout<<endl;
+    cout<<"Printing all ancestors "<< findAncestorsOfANode(root, 7);
     return 0;
 }
