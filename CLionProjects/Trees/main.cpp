@@ -720,22 +720,92 @@ bool findAncestorsOfANode(Tree *root, int node)
 {
     if(root == NULL)
     {
-        return 0;
+        return false;
     }
     if(root->getData() == node)
     {
-        return 1;
+        return true;
     }
 
     if( findAncestorsOfANode(root->getLeft(),node) || findAncestorsOfANode(root->getRight(),node))
     {
         cout<<root->getData()<<" ";
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 
 }
 
+//ZigZag Tree Traversal
+void zigZagTreeTraversal(Tree *root)
+{
+    Tree *temp1;
+    Tree *temp2;
+    if(root == NULL)
+    {
+        return;
+    }
+
+    stack<Tree*> s1; //from right to left
+    stack<Tree*> s2; // from left to right
+
+    s1.push(root);
+
+    while(!s1.empty() || !s2.empty())
+    {
+
+        while(!s1.empty())
+        {
+            temp1 = s1.top();
+            s1.pop();
+
+            cout<<temp1->getData();
+
+            //Here right is pushed before left
+            if(temp1->getRight())
+            {
+                s2.push(temp1->getRight());
+            }
+            if(temp1->getLeft())
+            {
+                s2.push(temp1->getLeft());
+            }
+        }
+
+        while(!s2.empty())
+        {
+            temp2 = s2.top();
+            s2.pop();
+
+            cout<<temp2->getData();
+
+            if(temp2->getLeft())
+            {
+                s1.push(temp2->getLeft());
+            }
+            if(temp2->getLeft())
+            {
+                s1.push(temp2->getRight());
+            }
+        }
+    }
+
+
+
+}
+
+//binary tree with three pointers
+void binaryTreeWithThreePointers(Tree *root)
+{
+    if(root == NULL)
+    {
+        return;
+    } else{
+        queue<Tree *> qStore;
+
+
+    }
+}
 
 void findLevelWithMaxSumTest() {
     Tree *root = CreateSampleCompleteTree();
@@ -763,6 +833,19 @@ void twoTrees(){
     Tree *root2 = CreateSampleCompleteTree();
     root2->getRight()->setData(4);
     cout<<"Are Trees structurally identical "<<(areBothTreeStructurallyIdentical(root1,root2) ? "Yes" : "No");
+}
+
+void zigZagTreeTraversalTest()
+{
+    Tree *root = CreateSampleCompleteTree();
+    cout<<"\nPrinting zigzag Traversal ";
+    zigZagTreeTraversal(root);
+}
+void ancestorsTest()
+{
+    Tree *root = CreateSampleCompleteTree();
+    cout<<"Printing all ancestors ";
+    findAncestorsOfANode(root, 7);
 }
 
 int main() {
@@ -815,6 +898,7 @@ int main() {
     cout<<endl;
     findLevelWithMaxSumTest();
     cout<<endl;
-    cout<<"Printing all ancestors "<< findAncestorsOfANode(root, 7);
+    ancestorsTest();
+    zigZagTreeTraversalTest();
     return 0;
 }
