@@ -1,5 +1,9 @@
 #include "tree.h"
+
 using namespace std;
+BinarySTree* CreateSampleBST();
+void binarySearchTreeTests();
+
 Tree* CreateSampleCompleteTree() {
     Tree *Llc = new Tree(4);
     Tree *Lrc = new Tree(5);
@@ -10,6 +14,8 @@ Tree* CreateSampleCompleteTree() {
     Tree *Root = new Tree(1,Lb, rb);
     return Root;
 }
+
+
 void inOrderRec(Tree *root){
     if(root==NULL) return;
 
@@ -794,6 +800,43 @@ void zigZagTreeTraversal(Tree *root)
 
 }
 
+void PostOrder(Tree *root)
+{
+    if(root == NULL)
+        return;
+    stack<Tree*> qStack;
+    while(1)
+    {
+        while(root != NULL)
+        {
+            qStack.push(root);
+            root = root->getLeft();
+        }
+        if(qStack.empty())
+        {
+            break;
+        }
+        root = qStack.top();
+        qStack.pop();
+
+        if(root->visited == 0){
+            root->visited = 1;
+            qStack.push(root);
+            root = root->getRight();
+        }else{
+            cout<<root->getData();
+            root = NULL;
+        }
+
+    }
+}
+
+void postOrdertest()
+{
+    Tree *root = CreateSampleCompleteTree();
+    PostOrder(root);
+}
+
 //binary tree with three pointers
 void binaryTreeWithThreePointers(Tree *root)
 {
@@ -848,25 +891,25 @@ void ancestorsTest()
     findAncestorsOfANode(root, 7);
 }
 
-int main() {
-    Tree *root = CreateSampleCompleteTree();
+void binaryTreeTests() {
     bool temp;
     int maxValue;
     Tree *temp2;
+    Tree *root = CreateSampleCompleteTree();
     cout<<"Inorder : " ; inOrderRec(root); cout <<endl;
     cout<<"preorder : " ; preOrderRec(root); cout <<endl;
     cout<<"postOrder : " ; postOrderRec(root); cout <<endl;
     cout<<"LevelOrder: " ; levelOrder(root);cout <<endl;
     cout<<"InorderIte: " ; inOrderIt(root);cout<<endl;
     cout<<"PreorderIte: "; preOrderIt(root);cout<<endl;
-   // cout<<"PostorderIte: "; postOrderIt(root);cout<<endl;
-   // cout<<"InsertinaBinaryTree" ;root = insertIntoABinaryTree(root,8);cout<<endl;
-   // cout<<"InsertinaBinaryTree" ;root = insertIntoABinaryTree(root,9);cout<<endl;
-   // cout<<"InsertinaBinaryTree" ;root = insertIntoABinaryTree(root,10);cout<<endl;
-   // cout<<"InsertinaBinaryTree" ;root = insertIntoABinaryTree(root,11);cout<<endl;
-   // cout<<"InsertinaBinaryTree" ;root = insertIntoABinaryTree(root,12);cout<<endl;
-  //  cout<<"InsertinaBinaryTree" ;root = insertIntoABinaryTree(root,13);cout<<endl;
-  //  cout<<"LevelOrder: " ; levelOrder(root);cout <<endl;
+    // cout<<"PostorderIte: "; postOrderIt(root);cout<<endl;
+    // cout<<"InsertinaBinaryTree" ;root = insertIntoABinaryTree(root,8);cout<<endl;
+    // cout<<"InsertinaBinaryTree" ;root = insertIntoABinaryTree(root,9);cout<<endl;
+    // cout<<"InsertinaBinaryTree" ;root = insertIntoABinaryTree(root,10);cout<<endl;
+    // cout<<"InsertinaBinaryTree" ;root = insertIntoABinaryTree(root,11);cout<<endl;
+    // cout<<"InsertinaBinaryTree" ;root = insertIntoABinaryTree(root,12);cout<<endl;
+    //  cout<<"InsertinaBinaryTree" ;root = insertIntoABinaryTree(root,13);cout<<endl;
+    //  cout<<"LevelOrder: " ; levelOrder(root);cout <<endl;
     cout<<"height of Tree:"<<heightOfATree(root);cout<<endl;
     cout<<"height of a Tree without recursive:"<<heightOfaTreeWithoutRec(root);cout<<endl;
     //cout<<"numberofNodes:" << numberOfNodesInATreeRecursive(root);
@@ -877,7 +920,7 @@ int main() {
     cout<<"numberofLeafsinBinaryTree:"<<numberOfLeafNodes(root);
     cout<<endl;
     cout<<"Mirror of Binary Tree";mirrorOfATree(root);cout<<endl;
-   // cout<<"Inorder : ";inOrderRec(root); cout <<endl;
+    // cout<<"Inorder : ";inOrderRec(root); cout <<endl;
     cout<<endl;
     //findingMaxElementinBinaryTree(root);
     cout<<"MaxElementinaBinaryTree:"<<findingMaxElementinBinaryTreeRec(root);
@@ -886,7 +929,7 @@ int main() {
     cout<<endl;
     //cout<<"Reverse a Binary Tree";
     cout<<endl;
-   // reverseABinaryTree(root);
+    // reverseABinaryTree(root);
     cout<<endl;
     temp2=findingDeepestNode(root);
     cout<<"Finding the deepest node:"<<temp2->getData();
@@ -900,5 +943,11 @@ int main() {
     cout<<endl;
     ancestorsTest();
     zigZagTreeTraversalTest();
+}
+
+
+int main() {
+    // binarySearchTreeTests();
+    postOrdertest();
     return 0;
 }
